@@ -326,6 +326,51 @@ body.dark-mode .reading-option.incorrect,
     }
 }
 
+/* Floating announcement styles */
+.announcement {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--bg-color);
+    border: 2px solid var(--text-color);
+    border-radius: 8px;
+    padding: 12px 24px;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.3s ease-out, fadeOut 0.3s ease-in 0.7s forwards;
+    font-size: 1.1rem;
+}
+
+.announcement.correct {
+    background-color: var(--correct-color);
+    color: white;
+    border-color: var(--correct-color);
+}
+
+.announcement.incorrect {
+    background-color: var(--incorrect-color);
+    color: white;
+    border-color: var(--incorrect-color);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translate(-50%, -100%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
 /* Accessibility Improvements */
 .reading-option:focus {
     outline: 3px solid var(--text-color);

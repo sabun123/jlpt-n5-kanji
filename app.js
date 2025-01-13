@@ -222,18 +222,28 @@ class KanjiGame {
 
         this.playReading(reading);
 
+        const showAnnouncement = (message, isCorrect) => {
+            const announcement = document.createElement('div');
+            announcement.className = `announcement ${isCorrect ? 'correct' : 'incorrect'}`;
+            announcement.setAttribute('role', 'alert');
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            
+            // Remove the announcement after animation
+            announcement.addEventListener('animationend', (e) => {
+                if (e.animationName === 'fadeOut') {
+                    announcement.remove();
+                }
+            });
+        };
+
         if (this.correctReadings.has(reading)) {
             button.classList.add('correct', 'disabled');
             button.setAttribute('aria-disabled', 'true');
             button.setAttribute('aria-pressed', 'true');
             this.selectedReadings.add(reading);
             
-            // Announce correct selection to screen readers
-            const announcement = document.createElement('div');
-            announcement.setAttribute('role', 'alert');
-            announcement.textContent = 'Correct reading!';
-            document.body.appendChild(announcement);
-            setTimeout(() => announcement.remove(), 1000);
+            showAnnouncement('Correct reading!', true);
 
             if (this.selectedReadings.size === this.correctReadings.size) {
                 this.successIndicator.classList.remove('hidden');
@@ -247,17 +257,11 @@ class KanjiGame {
             }
         } else {
             button.classList.add('incorrect');
-            // Ensure animation can replay if clicked multiple times
             button.addEventListener('animationend', () => {
                 button.classList.remove('incorrect');
             }, { once: true });
             
-            // Announce incorrect selection to screen readers
-            const announcement = document.createElement('div');
-            announcement.setAttribute('role', 'alert');
-            announcement.textContent = 'Incorrect reading, try again';
-            document.body.appendChild(announcement);
-            setTimeout(() => announcement.remove(), 500);
+            showAnnouncement('Incorrect reading, try again', false);
         }
     }
 }
