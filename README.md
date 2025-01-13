@@ -14,7 +14,7 @@ A simple, interactive web application for practicing JLPT N5 Kanji readings. The
 
 ## Live Site
 
-Visit [https://[sabun123].github.io/jlpt-n5-kanji/](https://[sabun123].github.io/jlpt-n5-kanji/)
+Visit [https://sabun123.github.io/jlpt-n5-kanji/](https://sabun123.github.io/jlpt-n5-kanji/)
 
 Go to the above link to access the site and start learning with self-testing today!
 
