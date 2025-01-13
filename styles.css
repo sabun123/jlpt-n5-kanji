@@ -28,6 +28,8 @@ body.dark-mode {
     --bg-color: #121212;
     --text-color: #ffffff;
     --checkbox-bg: #2a2a2a;
+    --correct-color: #66BB6A;
+    --incorrect-color: #FF5252;
 }
 
 .container {
@@ -98,21 +100,24 @@ body.dark-mode {
     transform: translateY(-2px);
 }
 
+body.dark-mode .reading-option {
+    background-color: #2a2a2a;
+    border-color: #404040;
+    color: #ffffff;
+}
+
 body.dark-mode .reading-option:hover {
     background-color: #3a3a3a;
 }
 
-body.dark-mode .reading-option {
-    background-color: #2a2a2a;
-    border-color: #404040;
-}
-
+body.dark-mode .reading-option.correct,
 .reading-option.correct {
     background-color: var(--correct-color);
     color: white;
     border-color: var(--correct-color);
 }
 
+body.dark-mode .reading-option.incorrect,
 .reading-option.incorrect {
     background-color: var(--incorrect-color);
     color: white;
@@ -144,10 +149,29 @@ body.dark-mode .reading-option {
     padding: 20px;
     font-size: 0.9rem;
     opacity: 0.8;
-    border-top: 1px solid var(--text-color);
     box-sizing: border-box;
     margin-top: auto;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.linkedin-link {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.linkedin-link:hover {
+    opacity: 0.7;
+}
+
+.linkedin-icon {
+    fill: var(--text-color);
+    width: 24px;
+    height: 24px;
 }
 
 @media (min-width: 768px) {
