@@ -28,6 +28,7 @@ class KanjiGame {
     initializeEventListeners() {
         this.themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
+            this.themeToggle.textContent = document.body.classList.contains('dark-mode') ? '暗' : '明';
         });
     }
 
