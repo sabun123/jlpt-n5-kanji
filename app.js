@@ -93,7 +93,13 @@ class KanjiGame {
         organizedReadings.forEach((reading, index) => {
             const button = document.createElement('button');
             button.className = 'reading-option';
-            button.textContent = reading;
+            
+            // Wrap text in span for hover scaling
+            const textSpan = document.createElement('span');
+            textSpan.textContent = reading;
+            textSpan.style.display = 'inline-block';
+            textSpan.style.transition = 'transform 0.3s ease';
+            button.appendChild(textSpan);
             
             const readingType = reading.match(/[ァ-ン]/) ? 'onyomi' : 'kunyomi';
             button.dataset.readingType = readingType;

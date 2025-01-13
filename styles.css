@@ -126,6 +126,10 @@ body.dark-mode #themeToggle {
     transform: translateY(-2px);
 }
 
+.reading-option:hover span {
+    transform: scale(1.8);
+}
+
 body.dark-mode .reading-option {
     background-color: #2a2a2a;
     border-color: #404040;
@@ -154,6 +158,14 @@ body.dark-mode .reading-option.incorrect,
 .reading-option.disabled {
     cursor: not-allowed;
     opacity: 0.7;
+}
+
+.reading-option.disabled:hover {
+    transform: none;
+}
+
+.reading-option.disabled:hover span {
+    transform: none;
 }
 
 #success-indicator {
