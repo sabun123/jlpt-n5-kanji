@@ -135,21 +135,27 @@ class KanjiGame {
 
             if (this.selectedReadings.size === this.correctReadings.size) {
                 this.successIndicator.classList.remove('hidden');
+                this.successIndicator.classList.add('visible');
                 this.successIndicator.setAttribute('role', 'alert');
                 this.successIndicator.setAttribute('aria-label', 'Correct! Moving to next kanji');
-                setTimeout(() => this.showNextKanji(), 1000);
+                setTimeout(() => {
+                    this.successIndicator.classList.remove('visible');
+                    this.showNextKanji();
+                }, 1000);
             }
         } else {
             button.classList.add('incorrect');
+            // Ensure animation can replay if clicked multiple times
+            button.addEventListener('animationend', () => {
+                button.classList.remove('incorrect');
+            }, { once: true });
+            
             // Announce incorrect selection to screen readers
             const announcement = document.createElement('div');
             announcement.setAttribute('role', 'alert');
             announcement.textContent = 'Incorrect reading, try again';
             document.body.appendChild(announcement);
-            setTimeout(() => {
-                button.classList.remove('incorrect');
-                announcement.remove();
-            }, 500);
+            setTimeout(() => announcement.remove(), 500);
         }
     }
 }
