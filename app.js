@@ -17,6 +17,12 @@ class KanjiGame {
         
         this.initializeEventListeners();
         this.showNextKanji();
+
+        // Add ARIA attributes to kanji display
+        this.kanjiElement.setAttribute('role', 'region');
+        this.kanjiElement.setAttribute('aria-label', 'Current kanji character');
+        this.readingsElement.setAttribute('role', 'group');
+        this.readingsElement.setAttribute('aria-label', 'Kanji readings options');
     }
 
     initializeEventListeners() {
@@ -53,6 +59,10 @@ class KanjiGame {
         this.selectedReadings = new Set();
         
         this.kanjiElement.textContent = this.currentKanji.kanji;
+        // Add aria-label with meaning for screen readers
+        this.kanjiElement.setAttribute('aria-label', 
+            `Current kanji: ${this.currentKanji.kanji}, meaning: ${this.currentKanji.meaning}`);
+        
         this.successIndicator.classList.add('hidden');
         
         this.displayReadingOptions();
@@ -79,15 +89,30 @@ class KanjiGame {
         // Combine them back maintaining the separation
         const organizedReadings = [...onyomiReadings, ...kunyomiReadings];
     
-        organizedReadings.forEach(reading => {
+        organizedReadings.forEach((reading, index) => {
             const button = document.createElement('button');
             button.className = 'reading-option';
             button.textContent = reading;
             
-            // Add a data attribute to identify reading type
-            button.dataset.readingType = reading.match(/[ァ-ン]/) ? 'onyomi' : 'kunyomi';
+            const readingType = reading.match(/[ァ-ン]/) ? 'onyomi' : 'kunyomi';
+            button.dataset.readingType = readingType;
             
-            button.addEventListener('click', () => this.handleReadingSelection(button, reading));
+            // Add accessibility attributes
+            button.setAttribute('role', 'button');
+            button.setAttribute('aria-label', 
+                `${readingType} reading: ${reading}`);
+            
+            // Add keyboard handling
+            button.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.handleReadingSelection(button, reading);
+                }
+            });
+            
+            button.addEventListener('click', () => 
+                this.handleReadingSelection(button, reading));
+            
             this.readingsElement.appendChild(button);
         });
     }
@@ -97,15 +122,34 @@ class KanjiGame {
 
         if (this.correctReadings.has(reading)) {
             button.classList.add('correct', 'disabled');
+            button.setAttribute('aria-disabled', 'true');
+            button.setAttribute('aria-pressed', 'true');
             this.selectedReadings.add(reading);
             
+            // Announce correct selection to screen readers
+            const announcement = document.createElement('div');
+            announcement.setAttribute('role', 'alert');
+            announcement.textContent = 'Correct reading!';
+            document.body.appendChild(announcement);
+            setTimeout(() => announcement.remove(), 1000);
+
             if (this.selectedReadings.size === this.correctReadings.size) {
                 this.successIndicator.classList.remove('hidden');
+                this.successIndicator.setAttribute('role', 'alert');
+                this.successIndicator.setAttribute('aria-label', 'Correct! Moving to next kanji');
                 setTimeout(() => this.showNextKanji(), 1000);
             }
         } else {
             button.classList.add('incorrect');
-            setTimeout(() => button.classList.remove('incorrect'), 500);
+            // Announce incorrect selection to screen readers
+            const announcement = document.createElement('div');
+            announcement.setAttribute('role', 'alert');
+            announcement.textContent = 'Incorrect reading, try again';
+            document.body.appendChild(announcement);
+            setTimeout(() => {
+                button.classList.remove('incorrect');
+                announcement.remove();
+            }, 500);
         }
     }
 }
