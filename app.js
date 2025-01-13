@@ -9,6 +9,11 @@ class KanjiGame {
         this.readingsElement = document.getElementById('readings');
         this.successIndicator = document.getElementById('success-indicator');
         this.themeToggle = document.getElementById('themeToggle');
+
+        // Footer copyright
+        const currentYear = new Date().getFullYear();
+        const copyrightYear = document.getElementById('copyright-year');
+        copyrightYear.textContent = currentYear > 2025 ? `2025-${currentYear}` : '2025';
         
         this.initializeEventListeners();
         this.showNextKanji();
@@ -58,12 +63,29 @@ class KanjiGame {
             ...Array.from(this.correctReadings),
             ...this.getWrongReadings(4)
         ].sort(() => 0.5 - Math.random());
-
+    
         this.readingsElement.innerHTML = '';
-        allReadings.forEach(reading => {
+        
+        // Create separate containers for onyomi and kunyomi
+        const onyomiReadings = allReadings.filter(reading => 
+            reading.match(/[ァ-ン]/)); // Check for katakana
+        const kunyomiReadings = allReadings.filter(reading => 
+            reading.match(/[ぁ-ん]/)); // Check for hiragana
+    
+        // Sort readings to ensure consistent layout
+        onyomiReadings.sort();
+        kunyomiReadings.sort();
+        
+        // Combine them back maintaining the separation
+        const organizedReadings = [...onyomiReadings, ...kunyomiReadings];
+    
+        organizedReadings.forEach(reading => {
             const button = document.createElement('button');
             button.className = 'reading-option';
             button.textContent = reading;
+            
+            // Add a data attribute to identify reading type
+            button.dataset.readingType = reading.match(/[ァ-ン]/) ? 'onyomi' : 'kunyomi';
             
             button.addEventListener('click', () => this.handleReadingSelection(button, reading));
             this.readingsElement.appendChild(button);

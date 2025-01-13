@@ -18,7 +18,7 @@ body {
 body.dark-mode {
     --bg-color: #121212;
     --text-color: #ffffff;
-    --checkbox-bg: #2d2d2d;
+    --checkbox-bg: #2a2a2a;
 }
 
 .container {
@@ -43,34 +43,55 @@ body.dark-mode {
 }
 
 .kanji-display {
-    margin: 40px 0;
+    margin: 60px 0;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
 }
 
 #currentKanji {
-    font-size: 120px;
-    margin: 20px 0;
+    font-size: clamp(120px, 20vw, 280px);
+    margin: 40px 0;
+    line-height: 1.2;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 .readings-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
 }
 
 .reading-option {
     background-color: var(--checkbox-bg);
     border: 2px solid var(--text-color);
-    border-radius: 5px;
-    padding: 10px 20px;
+    border-radius: 8px;
+    padding: 12px 20px;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
 }
 
 .reading-option:hover {
     transform: translateY(-2px);
+}
+
+body.dark-mode .reading-option:hover {
+    background-color: #3a3a3a;
+}
+
+body.dark-mode .reading-option {
+    background-color: #2a2a2a;
+    border-color: #404040;
 }
 
 .reading-option.correct {
@@ -91,14 +112,78 @@ body.dark-mode {
 }
 
 #success-indicator {
-    font-size: 48px;
-    color: var(--correct-color);
+    font-size: 72px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    z-index: 2;
+    color: var(--correct-color);
 }
 
 .hidden {
     display: none;
+}
+
+.copyright {
+    margin-top: 40px;
+    padding: 20px 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    border-top: 1px solid var(--text-color);
+}
+
+@media (min-width: 768px) {
+    .readings-container {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    
+    .reading-option {
+        font-size: 1.2rem;
+        padding: 15px 25px;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ensure text remains readable in all states */
+.reading-option:focus {
+    outline: 3px solid var(--text-color);
+    outline-offset: 2px;
+}
+
+/* Improve button accessibility */
+#themeToggle:focus {
+    outline: 2px solid var(--text-color);
+    outline-offset: 2px;
+}
+
+/* Improve spacing for mobile devices */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    #currentKanji {
+        margin: 20px 0;
+    }
+
+    .readings-container {
+        gap: 10px;
+        padding: 0 10px;
+    }
+
+    .reading-option {
+        padding: 10px 15px;
+        font-size: 1rem;
+    }
 }
