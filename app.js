@@ -9,6 +9,11 @@ class KanjiGame {
         this.readingsElement = document.getElementById('readings');
         this.successIndicator = document.getElementById('success-indicator');
         this.themeToggle = document.getElementById('themeToggle');
+        this.translationToggle = document.getElementById('toggleTranslation');
+        // this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Initialize speech synthesis voices
+        this.initializeVoices();
 
         // Footer copyright
         const currentYear = new Date().getFullYear();
@@ -30,6 +35,23 @@ class KanjiGame {
             document.body.classList.toggle('dark-mode');
             this.themeToggle.textContent = document.body.classList.contains('dark-mode') ? '暗' : '明';
         });
+
+        this.translationToggle.addEventListener('click', () => {
+            const translationElement = document.getElementById('translation');
+            translationElement.classList.toggle('hidden');
+        });
+    }
+
+    initializeVoices() {
+        // Load voices if they're already available
+        this.voices = window.speechSynthesis.getVoices();
+        
+        // If voices aren't loaded yet, wait for them
+        if (this.voices.length === 0) {
+            window.speechSynthesis.addEventListener('voiceschanged', () => {
+                this.voices = window.speechSynthesis.getVoices();
+            });
+        }
     }
 
     getRandomKanji() {
@@ -51,7 +73,8 @@ class KanjiGame {
         return shuffled.slice(0, count);
     }
 
-    showNextKanji() {
+    async showNextKanji() {
+        const previousKanji = this.currentKanji;
         this.currentKanji = this.getRandomKanji();
         this.correctReadings = new Set([
             ...this.currentKanji.readings.onyomi,
@@ -59,14 +82,28 @@ class KanjiGame {
         ]);
         this.selectedReadings = new Set();
         
+        // Animate out current kanji
+        if (previousKanji) {
+            this.kanjiElement.classList.add('kanji-exit');
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        // Update content
         this.kanjiElement.textContent = this.currentKanji.kanji;
-        // Add aria-label with meaning for screen readers
+        const translationElement = document.getElementById('translation');
+        translationElement.textContent = this.currentKanji.en; // Changed from meaning to en
         this.kanjiElement.setAttribute('aria-label', 
-            `Current kanji: ${this.currentKanji.kanji}, meaning: ${this.currentKanji.meaning}`);
+            `Current kanji: ${this.currentKanji.kanji}, meaning: ${this.currentKanji.en}`); // Changed here too
         
         this.successIndicator.classList.add('hidden');
         
         this.displayReadingOptions();
+
+        // Animate in new kanji
+        this.kanjiElement.classList.add('kanji-enter');
+        requestAnimationFrame(() => {
+            this.kanjiElement.classList.remove('kanji-exit', 'kanji-enter');
+        });
     }
 
     displayReadingOptions() {
@@ -124,8 +161,66 @@ class KanjiGame {
         });
     }
 
+    getBestJapaneseVoice() {
+        // First, try to find a male Japanese voice
+        const maleJapaneseVoice = this.voices.find(voice => 
+            (voice.lang.includes('ja-JP') || voice.lang.includes('ja')) &&
+            voice.name.toLowerCase().includes('male')
+        );
+        
+        if (maleJapaneseVoice) return maleJapaneseVoice;
+
+        // Next, try to find a Microsoft Japanese voice (generally higher quality)
+        const microsoftJapaneseVoice = this.voices.find(voice =>
+            (voice.lang.includes('ja-JP') || voice.lang.includes('ja')) &&
+            voice.name.includes('Microsoft')
+        );
+
+        if (microsoftJapaneseVoice) return microsoftJapaneseVoice;
+
+        // Finally, fall back to any Japanese voice
+        const anyJapaneseVoice = this.voices.find(voice =>
+            voice.lang.includes('ja-JP') || voice.lang.includes('ja')
+        );
+
+        return anyJapaneseVoice;
+    }
+
+    async playReading(reading) {
+        if (!window.speechSynthesis) {
+            console.error('Speech synthesis not supported');
+            return;
+        }
+
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(reading);
+        utterance.lang = 'ja-JP';
+        
+        // Optimize voice settings for better quality
+        utterance.rate = 1;    // Slightly slower for clarity
+        utterance.pitch = 1.0;   // Slightly deeper voice
+        utterance.volume = 1.0;  // Full volume
+
+        // Get the best available Japanese voice
+        const bestVoice = this.getBestJapaneseVoice();
+        if (bestVoice) {
+            utterance.voice = bestVoice;
+        }
+
+        // Create a promise to handle the speech completion
+        return new Promise((resolve) => {
+            utterance.onend = () => resolve();
+            utterance.onerror = () => resolve();
+            window.speechSynthesis.speak(utterance);
+        });
+    }
+
     handleReadingSelection(button, reading) {
         if (button.classList.contains('disabled')) return;
+
+        this.playReading(reading);
 
         if (this.correctReadings.has(reading)) {
             button.classList.add('correct', 'disabled');

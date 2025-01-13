@@ -90,6 +90,8 @@ body.dark-mode #themeToggle {
     align-items: center;
     justify-content: center;
     position: relative;
+    text-align: center;
+    margin: 2rem 0;
 }
 
 #currentKanji {
@@ -97,6 +99,24 @@ body.dark-mode #themeToggle {
     margin: 40px 0;
     line-height: 1.2;
     animation: fadeIn 0.5s ease-in-out;
+    font-size: 8rem;
+    transition: transform 0.3s ease-in-out;
+}
+
+.kanji-exit {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.kanji-enter {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.translation {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    color: #666;
 }
 
 .readings-container {
@@ -219,6 +239,44 @@ body.dark-mode .reading-option.incorrect,
     height: 24px;
 }
 
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.controls button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.dark-mode .controls button {
+    background: #333;
+    color: #fff;
+    border-color: #555;
+}
+
+.reading-item {
+    position: relative;
+    cursor: pointer;
+}
+
+.reading-item::after {
+    content: '🔊';
+    position: absolute;
+    right: -1.5rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.reading-item:hover::after {
+    opacity: 0.5;
+}
+
 @media (min-width: 768px) {
     .readings-container {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -322,5 +380,11 @@ body.dark-mode .reading-option.incorrect,
     #themeToggle {
         padding: 8px;
         font-size: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    #currentKanji {
+        font-size: 6rem;
     }
 }
