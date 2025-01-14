@@ -140,6 +140,7 @@ body.dark-mode #themeToggle {
     align-items: center;
     justify-content: center;
     margin: 0;
+    color: var(--text-color);
 }
 
 .reading-option:hover {
@@ -407,11 +408,18 @@ body.dark-mode .reading-option.incorrect,
     }
 
     .copyright {
-        padding: 15px 10px;
+        padding-top: 0px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 15px;
     }
 
     #success-indicator {
         font-size: clamp(80px, 15vw, 200px); /* Slightly smaller on mobile */
+    }
+
+    .kanji-display {
+        margin: 0;  /* Remove margins on mobile */
     }
 }
 
