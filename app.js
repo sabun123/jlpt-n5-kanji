@@ -10,17 +10,19 @@ class KanjiGame {
         this.successIndicator = document.getElementById('success-indicator');
         this.themeToggle = document.getElementById('themeToggle');
         this.translationToggle = document.getElementById('toggleTranslation');
-        // this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-        // Initialize speech synthesis voices
-        this.initializeVoices();
+        this.infoButton = document.getElementById('infoButton');
+        this.popup = document.getElementById('wordListPopup');
+        this.closePopupButton = document.getElementById('closePopup');
 
         // Footer copyright
         const currentYear = new Date().getFullYear();
         const copyrightYear = document.getElementById('copyright-year');
         copyrightYear.textContent = currentYear > 2025 ? `2025-${currentYear}` : '2025';
         
+        // Initialize speech synthesis voices
+        this.initializeVoices();
         this.initializeEventListeners();
+        this.initializeWordList();
         this.showNextKanji();
 
         // Add ARIA attributes to kanji display
@@ -40,6 +42,29 @@ class KanjiGame {
             const translationElement = document.getElementById('translation');
             translationElement.classList.toggle('hidden');
         });
+
+        // Add popup event listeners
+        this.infoButton.addEventListener('click', () => {
+            this.popup.classList.remove('hidden');
+        });
+
+        this.closePopupButton.addEventListener('click', () => {
+            this.popup.classList.add('hidden');
+        });
+
+        // Close popup when clicking outside
+        this.popup.addEventListener('click', (e) => {
+            if (e.target === this.popup) {
+                this.popup.classList.add('hidden');
+            }
+        });
+
+        // Close popup with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !this.popup.classList.contains('hidden')) {
+                this.popup.classList.add('hidden');
+            }
+        });
     }
 
     initializeVoices() {
@@ -52,6 +77,45 @@ class KanjiGame {
                 this.voices = window.speechSynthesis.getVoices();
             });
         }
+    }
+
+    initializeWordList() {
+        const wordListContainer = document.getElementById('wordList');
+        const totalWords = this.kanjiData.length;
+        
+        // Add word stats
+        const statsDiv = document.createElement('div');
+        statsDiv.className = 'word-stats';
+        statsDiv.textContent = `Total Words: ${totalWords}`;
+        wordListContainer.appendChild(statsDiv);
+        
+        // Add words with numbers
+        this.kanjiData.forEach((word, index) => {
+            const wordItem = document.createElement('div');
+            wordItem.className = 'word-item';
+            
+            const numberDiv = document.createElement('div');
+            numberDiv.className = 'word-number';
+            numberDiv.textContent = `${index + 1}.`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'word-content';
+            
+            const kanji = document.createElement('div');
+            kanji.className = 'kanji';
+            kanji.textContent = word.kanji;
+            
+            const english = document.createElement('div');
+            english.className = 'english';
+            english.textContent = word.en;
+            
+            contentDiv.appendChild(kanji);
+            contentDiv.appendChild(english);
+            
+            wordItem.appendChild(numberDiv);
+            wordItem.appendChild(contentDiv);
+            wordListContainer.appendChild(wordItem);
+        });
     }
 
     getRandomKanji() {
