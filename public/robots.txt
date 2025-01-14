@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://sabun123.github.io/jlpt-n5-kanji/sitemap.xml
